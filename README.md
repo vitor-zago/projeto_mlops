@@ -1,4 +1,4 @@
-## Objetivo do projeto
+# Objetivo do projeto
 
 Classificar e priorizar automaticamente a ordem de Ocorrências a serem periciadas (perícia
 papiloscópica): a partir dos dados usados no treinamento do ML, o modelo sugere a hierarquia de probabilidades de resultados (identificação do indivíduo fonte do vestígio)e o nível de urgência, apoiando o encaminhamento mais rápido à seção de exames periciais papiloscópicos.
@@ -6,16 +6,16 @@ papiloscópica): a partir dos dados usados no treinamento do ML, o modelo sugere
 O modelo não substitui a decisão humana do perito em Papiloscopia — apenas prioriza a fila
 de trabalho.
 
-## Escopo
+# Escopo
 
 O projeto abrange o desenvolvimento de um pipeline MLOps ponta a ponta para triagem
 automatizada de Ocorrências Policiais com registro de vestígios biométricos após perícia local e/ou laboratorial, cobrindo as camadas de infraestrutura, dados, treino, serviço e operação. As ferramentas utilizadas seguem o stack definido na disciplina.
 
-# Dentro do escopo:
+## Dentro do escopo:
 
 ![dentro_escopo](image.png)
 
-# Dataset sintético
+## Dataset sintético
 
 Sem dados reais ou informações pessoais.
 vestigios_sinteticos.csv com aproximadamente 500 registros fictícios de perícias, contendo variáveis representativas do contexto pericial papiloscópico, devidamente pré-processado, codificado e pronto para alimentar o pipeline de treinamento supervisionado. Dados de cada registro:
@@ -32,13 +32,13 @@ vestigios_sinteticos.csv com aproximadamente 500 registros fictícios de períci
 11. Vítima idosa: true /false
 12. Vítima criança: true/false
 
-# Fora do escopo
+## Fora do escopo
 
 (a) Integração com sistemas da Instituição (dados reais)
 (b) Execução efetiva da análise papiloscópica (o modelo não acessa imagens de impressões digitais - não trabalha com visão computacional)
 (c) Substituição de qualquer etapa da cadeia de custódia ou decisão pericial
 
-## Resultados esperados
+# Resultados esperados
 
 ![resultado01](image-1.png)
 ![resultado02](image-2.png)
