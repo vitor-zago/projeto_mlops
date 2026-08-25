@@ -91,15 +91,74 @@ def gerar_dataset(num_linhas):
     ]
     return pd.DataFrame(dados, columns=colunas)
 
-# 4. Executar e salvar
+# 4. Inserção de Sujeira nos Dados (simula dados reais para o pipeline de limpeza)
+def aplicar_sujeira(df, percentual_min=0.10, percentual_max=0.15):
+    """Corrompe uma fração aleatória (10% a 15%) das linhas com problemas comuns
+    de qualidade de dados, para que o dataset precise passar por limpeza."""
+    df = df.astype(object)  # permite valores mistos (numéricos, texto, None) nas colunas
+    percentual_sujeira = random.uniform(percentual_min, percentual_max)
+    qtd_linhas_sujas = int(len(df) * percentual_sujeira)
+    indices_sujos = random.sample(range(len(df)), k=qtd_linhas_sujas)
+
+    colunas_sujaveis = [c for c in df.columns if c != "Classificacao_Prioridade"]
+    colunas_texto = ["Tipo_Pericia", "Tipo_Local", "Delegacia", "Tecnica_Utilizada"]
+    colunas_numericas = ["Qtd_Objetos", "Qtd_Fotos", "Qtd_Fitas"]
+
+    tipos_sujeira = [
+        "valor_ausente", "inconsistencia_categorica", "valor_numerico_invalido",
+        "data_malformada", "booleano_como_texto", "linha_duplicada"
+    ]
+
+    indices_para_duplicar = []
+
+    for idx in indices_sujos:
+        sujeira = random.choice(tipos_sujeira)
+
+        if sujeira == "valor_ausente":
+            coluna = random.choice(colunas_sujaveis)
+            df.at[idx, coluna] = None
+
+        elif sujeira == "inconsistencia_categorica":
+            coluna = random.choice(colunas_texto)
+            valor = str(df.at[idx, coluna])
+            variacao = random.choice([
+                valor.upper(), valor.lower(), f"  {valor}  ", valor.replace(" ", "_")
+            ])
+            df.at[idx, coluna] = variacao
+
+        elif sujeira == "valor_numerico_invalido":
+            coluna = random.choice(colunas_numericas)
+            df.at[idx, coluna] = random.choice([-random.randint(1, 10), 999999, "N/A"])
+
+        elif sujeira == "data_malformada":
+            df.at[idx, "Horario_Exame"] = random.choice([
+                "31/02/2023 25:00:00", "data_invalida", "2023-13-45", ""
+            ])
+
+        elif sujeira == "booleano_como_texto":
+            coluna = random.choice(["Violencia_Domestica", "Vitima_Idosa"])
+            df.at[idx, coluna] = random.choice(["Sim", "Nao", "1", "0", "true"])
+
+        elif sujeira == "linha_duplicada":
+            indices_para_duplicar.append(idx)
+
+    if indices_para_duplicar:
+        duplicatas = df.loc[indices_para_duplicar]
+        df = pd.concat([df, duplicatas], ignore_index=True)
+
+    print(f"Sujeira aplicada em {len(indices_sujos)} linhas ({percentual_sujeira:.2%} do dataset original)")
+    return df
+
+# 5. Executar e salvar
 if __name__ == "__main__":
     tamanho_dataset = 5000  # Quantidade de registros
     df = gerar_dataset(tamanho_dataset)
+    df = aplicar_sujeira(df)
 
     diretorio_saida = Path(__file__).resolve().parent.parent / "data"
     diretorio_saida.mkdir(parents=True, exist_ok=True)
 
-    nome_base = "dataset_pericias_criminais"
+    nome_base = "dataset_pericias_papiloscopicas"
     caminho_saida = diretorio_saida / f"{nome_base}.csv"
     contador = 1
     while caminho_saida.exists():
